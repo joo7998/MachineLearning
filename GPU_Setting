@@ -1,0 +1,61 @@
+
+
+# GPU 설정 :
+https://mellowlee.tistory.com/entry/Windows-Tensorflow-Keras-%EC%82%AC%EC%A0%84-%EC%A4%80%EB%B9%84
+
+현재
+python 3.7.10
+목표
+tensorflow_gpu-2.1.0	Python 3.5-3.8	MSVC 2019	Bazel 3.1.0	cuDNN 7.6	CUDA 10.1
+
+> conda create -n tensorflow pip python=3.6
+> activate tensorflow > (tensorflow)
+> pip install tensorflow==2.3.0
+
+
+
+# pip install --ignore-installed --upgrade tensorflow-gpu => CUDA 10.1 환경에서 pip로 tensorflow를 설치할 경우, GPU를 사용할 수 없습
+# https://deep-deep-deep.tistory.com/83
+
+설치 cudart64_101.dll :  https://beuracle77.tistory.com/5
+
+tensorflow-2.1.0
+tensorflow-estimator-2.1.0
+
+> python
+> import tensorflow
+
+(tensorflow) PS E:\ML> nvcc --version
+=>Cuda compilation tools, release 10.1, V10.1.243
+
+import tensorflow as tf
+tf.test.is_gpu_available() : 적어도 하나의 GPU를 사용 가능한지 출력
+tf.test.gpu_device_name() : 첫 번째 GPU 이름을 츨력
+tf.config.experimental.list_physical_devices(device_type=’GPU’) : 이용 가능한 모든 GPU 목록을 출력
+
+
+
+<Tensorflow & GPU 연결>
+
+1) Jupyter lab에 가상환경 추가
+e:
+ML
+conda activate tensorflow
+(tensorflow)> pip install ipykernel
+              conda install -c conda-forge jupyterlab
+tensorflow2.1.0 으로 선택
+
+2) Failed to get convolution algorithm => GPU memory 문제
+=>jupyterlab에 쳐주기
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    try:
+        # Currently, memory growth needs to be the same across GPUs
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+        print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+    except RuntimeError as e:
+        # Memory growth must be set before GPUs have been initialized
+        print(e)
